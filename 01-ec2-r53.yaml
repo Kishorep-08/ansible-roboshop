@@ -8,6 +8,9 @@
     domain_name: "kishore-p.space"
     instances: 
     - mongodb
+    - mysql
+    - redis
+    - cart
   tasks:
   - name: create ec2
     amazon.aws.ec2_instance:
