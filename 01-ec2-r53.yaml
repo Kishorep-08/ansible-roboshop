@@ -1,0 +1,27 @@
+- name: create ec2 instances and route53 records
+  hosts: local
+  connection: local
+  vars:
+    ami_id: "ami-09c813fb71547fc4f"
+    sg_id: "sg-0935c7424eff90287"
+    zone_id: "Z10420318WCX06C8HN1Q"
+    domain_name: "kishore-p.space"
+    instances: 
+    - mongodb
+  tasks:
+  - name: create ec2
+    amazon.aws.ec2_instance:
+    name: "{{ item }}"
+    instance_type: t3.micro
+    security_group: "{{ sg_id }}"
+    network_interfaces:
+      - assign_public_ip: true
+    image_id: "{{ ami_id }}"
+    tags:
+      Name: "{{ item }}"
+  loop: "{{ instances }}"
+  register: ec2_output
+
+  - name: print ec2 output
+    ansible.builtin.debug:
+      msg: "{{ ec2_output }}"
