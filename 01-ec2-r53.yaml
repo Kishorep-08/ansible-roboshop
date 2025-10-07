@@ -41,4 +41,4 @@
       ttl: 1
       value: "{{ item.network_interfaces[0].private_ip_address }}"
       overwrite: true
-    loop: "{{ ec2_output.results }}"
+    loop: "{{ ec2_output.results[0].instances }}"
