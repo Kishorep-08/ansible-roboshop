@@ -6,11 +6,10 @@
     sg_id: "sg-0935c7424eff90287"
     zone_id: "Z10420318WCX06C8HN1Q"
     domain_name: "kishore-p.space"
-    instances: 
-    - mongodb
-    # - mysql
-    # - redis
-    # - cart
+    # instances: # we are going to pass instances as command line arguments
+    # - mongodb
+    # # - mysql
+    # # - redis
   tasks:
   - name: create ec2
     amazon.aws.ec2_instance:
