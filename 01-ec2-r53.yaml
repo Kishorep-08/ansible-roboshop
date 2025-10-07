@@ -30,7 +30,7 @@
   - name: print private IP
     ansible.builtin.debug:
       msg: "{{ item.network_interfaces[0].private_ip_address }}"
-    loop: "{{ ec2_output.results.instances }}"
+    loop: "{{ ec2_output[0].results.instances }}"
 
   # - name: create route53
   #   amazon.aws.route53:
