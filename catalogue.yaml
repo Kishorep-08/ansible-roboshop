@@ -58,3 +58,8 @@
 
     - name: connect to mongodb catalogue
       ansible.builtin.command: mongosh mongodb.kishore-p.space --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')"
+      register: catalogue_output
+
+    - name: print catalogue output
+      ansible.builtin.debug:
+        msg: "{{ catalogue_output }}"
