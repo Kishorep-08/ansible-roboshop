@@ -1,0 +1,4 @@
+- name: catalogue module
+  hosts: catalogue
+  become: yes
+  
