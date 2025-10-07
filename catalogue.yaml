@@ -63,3 +63,13 @@
     - name: print catalogue output
       ansible.builtin.debug:
         msg: "{{ catalogue_output }}"
+
+    - name: Loading master data into mongodb
+      ansible.builtin.shell: mongosh --host mongodb.kishore-p.space </app/db/master-data.js
+      when: catalogue_output.stdout | int < 0
+
+    - name: start and enable cataalogue
+      ansible.builtin.service:
+        name: catalogue
+        enabled: yes
+        state: started
