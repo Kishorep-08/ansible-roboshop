@@ -1,0 +1,68 @@
+- name: cart module
+  hosts: cart
+  become: yes
+  tasks:
+    - name: Disabling default nodejs
+      ansible.builtin.command: dnf module disable nodejs -y
+
+    - name: Enabling nodesjs 20
+      ansible.builtin.command: dnf module enable nodejs:20 -y
+
+    - name: install nodejs
+      ansible.builtin.package:
+        name: nodejs
+        state: present
+
+    - name: ceating system user
+      ansible.builtin.user:
+        name: roboshop
+        comment: "roboshop system user"
+        system: true
+        shell: /sbin/nologin
+        home: /app
+
+    ## This task is for deleting the existing /app directory so fresh directory is created and hence fresh code will be downloaded. If there is no old directory, it just skips.
+
+    - name: removing existing directory
+      ansible.builtin.file:
+        path: /app
+        state: absent
+
+    - name: creating directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    ## This task is to delete exisitng zip code
+
+    - name: removing existing zip file
+      ansible.builtin.file:
+        path: /tmp/cart.zip
+        state: absent
+
+    - name: Downloading application code
+      ansible.builtin.get_url:
+        url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip
+        dest: /tmp/cart.zip
+    
+    - name: Unzipping code
+      ansible.builtin.unarchive:
+        src: /tmp/cart.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Installinng packages
+      community.general.npm:
+        path: /app
+
+    - name: copying cart service file
+      ansible.builtin.copy:
+        src: cart.service
+        dest: /etc/systemd/system/cart.service
+
+    - name: daemon reoload, start and enable cart
+      ansible.builtin.systemd_service:
+        name: cart
+        daemon_reload: true
+        enabled: true
+        state: started
