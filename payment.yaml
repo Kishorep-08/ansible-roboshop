@@ -1,0 +1,69 @@
+- name: payment module
+  hosts: payment
+  become: yes
+  tasks:
+  - name: install python packages
+    ansible.builtin.dnf:
+      name: "{{ item }}"
+      state: present
+    loop:
+    - python3
+    - gcc
+    - python3-devel
+  
+  - name: ceating system user
+    ansible.builtin.user:
+        name: roboshop
+        comment: "roboshop system user"
+        system: true
+        shell: /sbin/nologin
+        home: /app
+
+    ## This task is for deleting the existing /app directory so fresh directory is created and hence fresh code will be downloaded. If there is no old directory, it just skips.
+
+  - name: removing existing directory
+    ansible.builtin.file:
+      path: /app
+      state: absent
+
+  - name: creating directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  ## This task is to delete exisitng zip code
+
+  - name: removing existing zip file
+    ansible.builtin.file:
+      path: /tmp/payment.zip
+      state: absent
+
+  - name: Downloading application code
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/payment-v3.zip
+      dest: /tmp/cart.zip
+  
+  - name: Unzipping code
+    ansible.builtin.unarchive:
+      src: /tmp/payment.zip
+      dest: /app
+      remote_src: yes
+
+  - name: install dependencies
+    ansible.builtin.pip:
+      requirements: requirements.txt
+      executable: pip3.9
+    args:
+      chdir: /app
+
+  - name: copy payment service
+    ansible.builtin.copy:
+      src: payment.service
+      dest: /etc/systemd/system/payment.service
+
+  - name: daemon reload enable and start
+    ansible.builtin.systemd_service:
+      name: payment
+      enabled: true
+      state: started
+      daemon_reload: true
