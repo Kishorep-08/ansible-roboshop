@@ -32,5 +32,21 @@
       src: /tmp/frontend.zip
       dest: /usr/share/nginx/html
       remote_src: yes
+
+  - name: copying nginx.conf content
+    ansible.builtin.copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+      force: yes
+
+  - name: daemon reoload, start and enable nginx
+    ansible.builtin.systemd_service:
+      name: nginx
+      daemon_reload: true
+      enabled: true
+      state: restarted
+
+  
+
     
     
