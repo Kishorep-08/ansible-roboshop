@@ -4,8 +4,13 @@ regions:
 - us-east-1
 
 filters:
-  tag:Name: ansible
+  tag:Name: frontend
   instance-state-name: running
 
 hostnames:
    - private-ip-address
+   - tag:Name
+
+compose:
+  # This sets the `ansible_host` variable to connect with the private IP address without changing the hostname.
+  ansible_host: private_ip_address
