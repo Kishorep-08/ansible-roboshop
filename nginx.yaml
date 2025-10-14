@@ -1,0 +1,7 @@
+- name: install nginx
+  hosts: dynamic_frontend
+  become: yes
+  tasks:
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
